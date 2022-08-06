@@ -7,4 +7,3 @@ router = APIRouter()
 @router.get("/", name="home")
 async def root(request: Request):
     return {"message": "index"}
-
