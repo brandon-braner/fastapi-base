@@ -1,15 +1,16 @@
 from fastapi import APIRouter
-from starlette.requests import Request
-from singlepane.modules.auth.providers.auth0 import oauth
-from singlepane import settings
 from fastapi.responses import RedirectResponse
+from starlette.requests import Request
+
+from app.config.settings import settings
+from app.modules.auth.providers.auth0 import oauth
 
 router = APIRouter()
 
 
 @router.get("/login", name="login")
 async def login(request: Request):
-    redirect_uri = request.url_for('callback')
+    redirect_uri = request.url_for("callback")
     return await oauth.auth0.authorize_redirect(request, redirect_uri)
 
 
@@ -21,16 +22,20 @@ async def login(request: Request):
 #     request.session['user'] = user
 #     return dict(user)
 
-@router.get("/callback")
-@router.post("/callback")
+
+@router.get("/callback", response_class=RedirectResponse)
+@router.post("/callback", response_class=RedirectResponse)
 async def callback(request: Request):
     token = await oauth.auth0.authorize_access_token(request)
-    user = token['userinfo']
-    request.session['user'] = user
-    return dict(user)
+    request.session["user_info"] = token
+    return request.url_for("app_home")
+
 
 @router.get("/logout", response_class=RedirectResponse)
 def logout(request: Request):
-    request.session.clear()
-    return f"""https://{settings.auth0_domain}
-        /v2/logout?client_id={settings.auth0_client_id}&returnTo={request.url_for('home')}"""
+    request.session.pop("user_info", None)
+    request.session.pop("user", None)
+    request.cookies.pop("userid", None)
+    request.cookies.pop(settings.auth_cookie_name, None)
+    return f"""https://{settings.auth0_domain}/v2/logout
+    ?client_id={settings.auth0_client_id}&returnTo={request.url_for('home')}"""

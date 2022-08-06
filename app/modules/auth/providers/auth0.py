@@ -1,7 +1,7 @@
 from authlib.integrations.starlette_client import OAuth
-from singlepane.settings import get_settings
 
-settings = get_settings()
+from app.config.settings import settings
+
 oauth = OAuth()
 
 oauth.register(
@@ -11,5 +11,5 @@ oauth.register(
     client_kwargs={
         "scope": f"{settings.auth0_scope}",
     },
-    server_metadata_url=f'https://{settings.auth0_domain}/.well-known/openid-configuration',
+    server_metadata_url=f"https://{settings.auth0_domain}/.well-known/openid-configuration",
 )
