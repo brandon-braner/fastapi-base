@@ -3,7 +3,7 @@
 ;
 ignore = F401 F811 W503, E203
 
-max-line-length = 120
+max-line-length = 140
 
 exclude = .git,
           .idea,

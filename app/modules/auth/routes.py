@@ -28,7 +28,7 @@ async def login(request: Request):
 async def callback(request: Request):
     token = await oauth.auth0.authorize_access_token(request)
     request.session["user_info"] = token
-    return request.url_for("app_home")
+    return request.url_for("dashboard")
 
 
 @router.get("/logout", response_class=RedirectResponse)
@@ -37,5 +37,4 @@ def logout(request: Request):
     request.session.pop("user", None)
     request.cookies.pop("userid", None)
     request.cookies.pop(settings.auth_cookie_name, None)
-    return f"""https://{settings.auth0_domain}/v2/logout
-    ?client_id={settings.auth0_client_id}&returnTo={request.url_for('home')}"""
+    return f"""https://{settings.auth0_domain}/v2/logout?client_id={settings.auth0_client_id}&returnTo={request.url_for('home')}"""
