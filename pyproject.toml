@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "singlepane"
+version = "0.1.0"
+description = ""
+authors = ["Brandon Braner <brandon.braner@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+fastapi = "^0.79.0"
+uvicorn = "^0.18.2"
+Authlib = "^1.0.1"
+python-dotenv = "^0.20.0"
+httpx = "^0.23.0"
+itsdangerous = "^2.1.2"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
