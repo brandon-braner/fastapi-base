@@ -1,12 +1,8 @@
 from fastapi import Request
-from starlette.authentication import (
-    AuthCredentials,
-    AuthenticationBackend,
-    AuthenticationError,
-    SimpleUser,
-)
+from starlette.authentication import AuthenticationBackend, AuthenticationError
 
 from app.config.settings import settings
+from app.modules.auth.providers.auth0 import validate_token
 
 
 def add_protected_route(route: str):
@@ -25,6 +21,8 @@ class AuthBackend(AuthenticationBackend):
         if not authorization_cookie:
             raise AuthenticationError("Unable to authenticate user.")
 
+        validate_token(authorization_cookie)
+
     async def request_needs_authorization(self, request: Request):
         """
         If Path is in NON AUTH ENDPOINTS this will return false so we don't need to authenticate user the endpoint.
@@ -39,5 +37,5 @@ class AuthBackend(AuthenticationBackend):
 
     async def get_authorization_cookie(self, request: Request):
         """Get the cookie and return it that should be the auth token."""
-        cookie_name = settings.auth_cookie_name
+        cookie_name = settings.id_token_cookie_name
         return request.cookies.get(cookie_name, None)
