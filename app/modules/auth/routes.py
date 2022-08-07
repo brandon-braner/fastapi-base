@@ -25,16 +25,16 @@ async def login(request: Request):
 
 @router.get("/callback", response_class=RedirectResponse)
 @router.post("/callback", response_class=RedirectResponse)
-async def callback(request: Request):
+async def callback(request: Request, response: RedirectResponse):
     token = await oauth.auth0.authorize_access_token(request)
-    request.session["user_info"] = token
-    return request.url_for("dashboard")
+    response_url = request.url_for("dashboard")
+    response = RedirectResponse(response_url)
+    response.set_cookie(settings.id_token_cookie_name, token["id_token"], max_age=token["expires_at"], httponly=True)
+    return response
 
 
 @router.get("/logout", response_class=RedirectResponse)
 def logout(request: Request):
-    request.session.pop("user_info", None)
-    request.session.pop("user", None)
-    request.cookies.pop("userid", None)
-    request.cookies.pop(settings.auth_cookie_name, None)
+    request.session.clear()
+    request.cookies.clear()
     return f"""https://{settings.auth0_domain}/v2/logout?client_id={settings.auth0_client_id}&returnTo={request.url_for('home')}"""
