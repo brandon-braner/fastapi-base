@@ -29,7 +29,7 @@ async def callback(request: Request, response: RedirectResponse):
     token = await oauth.auth0.authorize_access_token(request)
     response_url = request.url_for("dashboard")
     response = RedirectResponse(response_url)
-    response.set_cookie(settings.id_token_cookie_name, token["id_token"], max_age=token["expires_at"], httponly=True)
+    response.set_cookie(settings.auth.id_token_cookie_name, token["id_token"], max_age=token["expires_at"], httponly=True)
     return response
 
 
