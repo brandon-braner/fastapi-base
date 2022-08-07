@@ -6,7 +6,7 @@ from app.modules.auth.providers.auth0 import validate_token
 
 
 def add_protected_route(route: str):
-    settings.protected_routes.append(route)
+    settings.auth.protected_routes.append(route)
 
 
 class AuthBackend(AuthenticationBackend):
@@ -30,12 +30,12 @@ class AuthBackend(AuthenticationBackend):
         path = request.url.path
         path_split = path.split("/")  # get the prefix we assign to routes for app paths such as /dashboard
         route_prefix = f"/{path_split[1]}"
-        return route_prefix in settings.protected_routes
+        return route_prefix in settings.auth.protected_routes
 
     async def get_request_host(self, request: Request):
         return request.headers.get("Host", None)
 
     async def get_authorization_cookie(self, request: Request):
         """Get the cookie and return it that should be the auth token."""
-        cookie_name = settings.id_token_cookie_name
+        cookie_name = settings.auth.id_token_cookie_name
         return request.cookies.get(cookie_name, None)
